@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOHAMED SALAMA ABDOU | Interactive CV Dashboard</title>
+  <style>
+    :root {
+      --bg: #eef5ff;
+      --panel: rgba(255,255,255,.86);
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --primary: #1d4ed8;
+      --primary-2: #0891b2;
+      --accent: #f59e0b;
+      --line: #dbeafe;
+      --shadow: 0 20px 45px rgba(15, 23, 42, .12);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(29,78,216,.22), transparent 32%),
+        radial-gradient(circle at 90% 0%, rgba(8,145,178,.18), transparent 28%),
+        linear-gradient(135deg, #f8fbff 0%, var(--bg) 100%);
+      min-height: 100vh;
+    }
+    .dashboard {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 60px;
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      padding: 34px;
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(15,23,42,.96), rgba(29,78,216,.88)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.16'%3E%3Ccircle cx='90' cy='90' r='50'/%3E%3Cpath d='M20 90h140M90 20v140M42 42l96 96M138 42l-96 96'/%3E%3C/g%3E%3C/svg%3E");
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -120px auto;
+      width: 320px;
+      height: 320px;
+      background: rgba(245,158,11,.18);
+      border-radius: 50%;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 24px;
+      align-items: center;
+    }
+    .avatar {
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #38bdf8, #f59e0b);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      box-shadow: 0 15px 30px rgba(0,0,0,.24);
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: .96;
+      letter-spacing: -1.5px;
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      opacity: .92;
+      margin: 16px 0 0;
+      max-width: 760px;
+      line-height: 1.65;
+    }
+    .contact-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .contact-card {
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 18px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      font-weight: 650;
+    }
+    .contact-card span {
+      display: block;
+      font-size: .78rem;
+      opacity: .72;
+      margin-bottom: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 18px 0;
+      padding: 12px;
+      border: 1px solid rgba(219,234,254,.9);
+      border-radius: 22px;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 28px rgba(15,23,42,.08);
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .nav a, .action-btn {
+      border: 0;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 750;
+      transition: .22s ease;
+    }
+    .nav a:hover, .action-btn:hover, .tool-chip:hover {
+      transform: translateY(-2px);
+      background: #dbeafe;
+      color: var(--primary);
+    }
+    .action-btn.primary {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 18px 0;
+    }
+    .kpi {
+      padding: 22px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 28px rgba(15,23,42,.07);
+    }
+    .kpi strong {
+      display: block;
+      font-size: 2.25rem;
+      color: var(--primary);
+    }
+    .kpi span { color: var(--muted); font-weight: 700; }
+    .grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 18px;
+    }
+    section, .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 32px rgba(15,23,42,.07);
+    }
+    section { padding: 24px; margin-bottom: 18px; }
+    h2 {
+      margin: 0 0 16px;
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2::before {
+      content: "";
+      width: 12px;
+      height: 28px;
+      border-radius: 99px;
+      background: linear-gradient(var(--primary), var(--accent));
+    }
+    .summary-text {
+      color: #334155;
+      line-height: 1.75;
+      font-size: 1.02rem;
+    }
+    .skill-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    #skillSearch, #experienceSearch {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 12px 14px;
+      outline: none;
+      font-size: .98rem;
+      background: white;
+    }
+    #skillSearch:focus, #experienceSearch:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29,78,216,.12);
+    }
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .skill-chip, .pill, .tool-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 9px 12px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 750;
+      font-size: .9rem;
+      border: 1px solid #bfdbfe;
+    }
+    .skill-chip.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      border-color: transparent;
+    }
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 14px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 22px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 99px;
+      background: linear-gradient(var(--primary), var(--accent));
+    }
+    .timeline-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 14px;
+    }
+    .timeline-dot {
+      z-index: 1;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      font-weight: 900;
+      box-shadow: 0 10px 20px rgba(29,78,216,.25);
+    }
+    .job-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 18px;
+      transition: .25s ease;
+    }
+    .job-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 35px rgba(15,23,42,.12);
+    }
+    .job-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    h3 { margin: 0 0 6px; font-size: 1.1rem; }
+    .muted { color: var(--muted); margin: 0; }
+    .date-badge {
+      white-space: nowrap;
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: .82rem;
+      font-weight: 850;
+    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    ul { padding-left: 20px; margin: 10px 0 0; color: #334155; line-height: 1.65; }
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .mini-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 18px;
+    }
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tool-chip {
+      cursor: default;
+      background: #f8fafc;
+      color: #334155;
+    }
+    .language-row {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .language-row div:first-child {
+      display: flex;
+      justify-content: space-between;
+      color: #334155;
+    }
+    .language-row span { color: var(--muted); font-weight: 700; }
+    .bar {
+      height: 11px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2), var(--accent));
+      animation: grow 1.1s ease both;
+    }
+    @keyframes grow { from { width: 0; } }
+    .hidden { display: none !important; }
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px;
+      font-size: .92rem;
+    }
+    @media (max-width: 900px) {
+      .hero-content, .grid, .two-cols { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .job-top { flex-direction: column; }
+      .date-badge { white-space: normal; }
+    }
+    @media (max-width: 540px) {
+      .dashboard { width: min(100% - 18px, 1180px); margin-top: 10px; }
+      .hero { padding: 24px; border-radius: 24px; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .nav { position: static; }
+      .nav a, .action-btn { width: 100%; text-align: center; }
+      .nav-links { width: 100%; }
+      .timeline-item { grid-template-columns: 42px 1fr; }
+      .timeline::before { left: 19px; }
+      .timeline-dot { width: 40px; height: 40px; }
+    }
+    @media print {
+      body { background: white; }
+      .dashboard { width: 100%; margin: 0; }
+      .nav, .skill-toolbar, #experienceSearch { display: none; }
+      .hero, section, .kpi, .job-card, .mini-card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .hero {
+        color: white;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dashboard">
+    <header class="hero">
+      <div class="hero-content">
+        <div>
+          <div class="avatar">MS</div>
+          <h1>MOHAMED SALAMA ABDOU</h1>
+          <p class="subtitle">Interactive CV Dashboard for Science, Chemistry, Physics, Biology, NGSS, IGCSE, STEM and Digital Education roles.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card"><span>Location</span>Jeddah, Saudi Arabia</div>
+          <div class="contact-card"><span>Phone</span><a style="color:white" href="tel:+966533443648">+966 533 443 648</a></div>
+          <div class="contact-card"><span>Email</span><a style="color:white" href="mailto:mmssaadd@gmail.com">mmssaadd@gmail.com</a></div>
+          <div class="contact-card"><span>LinkedIn</span><a style="color:white" href="https://linkedin.com/in/mohamed-salama-192495ba" target="_blank" rel="noopener">linkedin.com/in/mohamed-salama-192495ba</a></div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <div class="nav-links">
+        <a href="#summary">Summary</a>
+        <a href="#skills">Skills</a>
+        <a href="#experience">Experience</a>
+        <a href="#education">Education</a>
+        <a href="#tools">Tools</a>
+      </div>
+      <button class="action-btn primary" onclick="window.print()">Print / Save PDF</button>
+    </nav>
+
+    <section class="kpi-grid" aria-label="Career highlights">
+      <div class="kpi"><strong data-count="20">0</strong><span>Years Teaching</span></div>
+      <div class="kpi"><strong data-count="6">0</strong><span>Science Subjects</span></div>
+      <div class="kpi"><strong data-count="4">0</strong><span>Major Institutions</span></div>
+      <div class="kpi"><strong data-count="2">0</strong><span>Curriculum Tracks</span></div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section id="summary">
+          <h2>Professional Summary</h2>
+          <p class="summary-text">Highly experienced Science Educator with over 20 years of teaching experience in Chemistry, Physics, Biology, General Science, Health Science, and Medical Terminology within international schools in Saudi Arabia and Egypt. Specialized in American Curriculum (NGSS), Cambridge IGCSE programs, inquiry-based learning, STEM integration, and digital education. Proven ability to deliver engaging lessons, improve academic achievement, and prepare students for international assessments.</p>
+        </section>
+
+        <section id="skills">
+          <h2>Core Competencies</h2>
+          <div class="skill-toolbar">
+            <input id="skillSearch" type="search" placeholder="Search skills: chemistry, NGSS, labs, robotics..." />
+          </div>
+          <div class="skills" id="skillsContainer">
+            <span class="skill-chip" data-skill="chemistry">Chemistry</span><span class="skill-chip" data-skill="physics">Physics</span><span class="skill-chip" data-skill="biology">Biology</span><span class="skill-chip" data-skill="general science">General Science</span><span class="skill-chip" data-skill="american curriculum">American Curriculum</span><span class="skill-chip" data-skill="ngss">NGSS</span><span class="skill-chip" data-skill="cambridge igcse 0620/0625">Cambridge IGCSE 0620/0625</span><span class="skill-chip" data-skill="inquiry-based learning">Inquiry-Based Learning</span><span class="skill-chip" data-skill="5e model">5E Model</span><span class="skill-chip" data-skill="stem">STEM</span><span class="skill-chip" data-skill="project-based learning">Project-Based Learning</span><span class="skill-chip" data-skill="laboratory safety">Laboratory Safety</span><span class="skill-chip" data-skill="experiment design">Experiment Design</span><span class="skill-chip" data-skill="map assessment">MAP Assessment</span><span class="skill-chip" data-skill="differentiated instruction">Differentiated Instruction</span><span class="skill-chip" data-skill="data-driven teaching">Data-Driven Teaching</span><span class="skill-chip" data-skill="classroom management">Classroom Management</span><span class="skill-chip" data-skill="smart board">Smart Board</span><span class="skill-chip" data-skill="educational technology">Educational Technology</span><span class="skill-chip" data-skill="virtual labs">Virtual Labs</span><span class="skill-chip" data-skill="simulations">Simulations</span><span class="skill-chip" data-skill="robotics">Robotics</span><span class="skill-chip" data-skill="ai integration">AI Integration</span><span class="skill-chip" data-skill="curriculum development">Curriculum Development</span><span class="skill-chip" data-skill="esl support">ESL Support</span><span class="skill-chip" data-skill="mixed-ability support">Mixed-Ability Support</span>
+          </div>
+        </section>
+
+        <section id="tools">
+          <h2>Technology & Teaching Tools</h2>
+          <div class="tools"><button class="tool-chip" type="button">Smart Board</button><button class="tool-chip" type="button">Blackboard</button><button class="tool-chip" type="button">Classera</button><button class="tool-chip" type="button">Google Classroom</button><button class="tool-chip" type="button">PhET Simulations</button><button class="tool-chip" type="button">Virtual Labs</button><button class="tool-chip" type="button">Robotics Programming</button><button class="tool-chip" type="button">Microsoft Office</button></div>
+        </section>
+
+        <section>
+          <h2>Languages</h2>
+          
+      <div class="language-row">
+        <div><strong>Arabic</strong><span>Native</span></div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+      <div class="language-row">
+        <div><strong>English</strong><span>Advanced</span></div>
+        <div class="bar"><i style="width:88%"></i></div>
+      </div>
+        </section>
+      </div>
+
+      <div>
+        <section id="experience">
+          <h2>Professional Experience</h2>
+          <input id="experienceSearch" type="search" placeholder="Filter experience: IGCSE, labs, assessment, STEM..." />
+          <div class="timeline" id="timeline">
+            
+    <article class="timeline-item" data-search="senior science teacher edugates international schools jeddah, saudi arabia 2016 – present ngss igcse stem digital learning teach chemistry, physics, biology, science, health, and medical terminology. deliver ngss and igcse-aligned instruction using inquiry-based methodologies. design practical labs, stem projects, and blended learning activities. use assessment data to improve student achievement and support learning gaps. integrate technology platforms including blackboard, classera, and smart boards.">
+      <div class="timeline-dot">1</div>
+      <div class="job-card">
+        <div class="job-top">
+          <div>
+            <h3>Senior Science Teacher</h3>
+            <p class="muted">Edugates International Schools · Jeddah, Saudi Arabia</p>
+          </div>
+          <span class="date-badge">2016 – Present</span>
+        </div>
+        <div class="tag-row"><span class="pill">NGSS</span><span class="pill">IGCSE</span><span class="pill">STEM</span><span class="pill">Digital Learning</span></div>
+        <ul><li>Teach Chemistry, Physics, Biology, Science, Health, and Medical Terminology.</li>
+<li>Deliver NGSS and IGCSE-aligned instruction using inquiry-based methodologies.</li>
+<li>Design practical labs, STEM projects, and blended learning activities.</li>
+<li>Use assessment data to improve student achievement and support learning gaps.</li>
+<li>Integrate technology platforms including Blackboard, Classera, and Smart Boards.</li></ul>
+      </div>
+    </article>
+    <article class="timeline-item" data-search="science, chemistry &amp; physics teacher al anjal international schools jeddah, saudi arabia 2010 – 2016 assessment practical exams science enrichment delivered integrated science instruction for middle and secondary school students. prepared students for international assessments and practical examinations. conducted laboratory activities and science enrichment programs. supported curriculum planning and departmental initiatives.">
+      <div class="timeline-dot">2</div>
+      <div class="job-card">
+        <div class="job-top">
+          <div>
+            <h3>Science, Chemistry &amp; Physics Teacher</h3>
+            <p class="muted">Al Anjal International Schools · Jeddah, Saudi Arabia</p>
+          </div>
+          <span class="date-badge">2010 – 2016</span>
+        </div>
+        <div class="tag-row"><span class="pill">Assessment</span><span class="pill">Practical Exams</span><span class="pill">Science Enrichment</span></div>
+        <ul><li>Delivered integrated science instruction for middle and secondary school students.</li>
+<li>Prepared students for international assessments and practical examinations.</li>
+<li>Conducted laboratory activities and science enrichment programs.</li>
+<li>Supported curriculum planning and departmental initiatives.</li></ul>
+      </div>
+    </article>
+    <article class="timeline-item" data-search="chemistry &amp; science teacher dar arrowad schools jeddah, saudi arabia 2007 – 2010 chemistry projects lab safety taught chemistry and general science with emphasis on practical learning. developed assessments, worksheets, and project-based activities. maintained safe and effective science laboratory environments.">
+      <div class="timeline-dot">3</div>
+      <div class="job-card">
+        <div class="job-top">
+          <div>
+            <h3>Chemistry &amp; Science Teacher</h3>
+            <p class="muted">Dar Arrowad Schools · Jeddah, Saudi Arabia</p>
+          </div>
+          <span class="date-badge">2007 – 2010</span>
+        </div>
+        <div class="tag-row"><span class="pill">Chemistry</span><span class="pill">Projects</span><span class="pill">Lab Safety</span></div>
+        <ul><li>Taught Chemistry and General Science with emphasis on practical learning.</li>
+<li>Developed assessments, worksheets, and project-based activities.</li>
+<li>Maintained safe and effective science laboratory environments.</li></ul>
+      </div>
+    </article>
+    <article class="timeline-item" data-search="science &amp; physics teacher ministry of education egypt 2002 – 2007 physics science fairs exam preparation taught science and physics to preparatory and secondary students. supported science fairs, laboratory work, and examination preparation.">
+      <div class="timeline-dot">4</div>
+      <div class="job-card">
+        <div class="job-top">
+          <div>
+            <h3>Science &amp; Physics Teacher</h3>
+            <p class="muted">Ministry of Education · Egypt</p>
+          </div>
+          <span class="date-badge">2002 – 2007</span>
+        </div>
+        <div class="tag-row"><span class="pill">Physics</span><span class="pill">Science Fairs</span><span class="pill">Exam Preparation</span></div>
+        <ul><li>Taught Science and Physics to preparatory and secondary students.</li>
+<li>Supported science fairs, laboratory work, and examination preparation.</li></ul>
+      </div>
+    </article>
+          </div>
+        </section>
+
+        <section id="education">
+          <h2>Education & Certifications</h2>
+          <div class="two-cols">
+            <div class="mini-card">
+              <h3>Education</h3>
+              <ul><li>M.Sc. in Chemistry (In Progress) – Ain Shams University</li>
+<li>Special Diploma in Organic Chemistry – Tanta University</li>
+<li>General Diploma in Teacher Preparation in Science – Tanta University</li>
+<li>B.Sc. in Education (Chemistry &amp; Physics) – Tanta University</li></ul>
+            </div>
+            <div class="mini-card">
+              <h3>Certifications</h3>
+              <ul><li>Saudi Professional Teaching License – 2025</li>
+<li>Cambridge Curriculum Training</li>
+<li>Robotics &amp; AI in Education Certificate</li>
+<li>ICDL Certification</li>
+<li>MCSD.NET</li>
+<li>CompTIA Network+</li></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Built as a responsive interactive HTML CV dashboard. Use “Print / Save PDF” to export a clean copy.
+    </footer>
+  </main>
+
+  <script>
+    const animateCounters = () => {
+      document.querySelectorAll("[data-count]").forEach(counter => {
+        const target = Number(counter.dataset.count);
+        let value = 0;
+        const step = Math.max(1, Math.ceil(target / 40));
+        const tick = () => {
+          value += step;
+          if (value >= target) {
+            counter.textContent = target + (target === 20 ? "+" : "");
+          } else {
+            counter.textContent = value;
+            requestAnimationFrame(tick);
+          }
+        };
+        tick();
+      });
+    };
+
+    const filterSkills = () => {
+      const search = document.getElementById("skillSearch").value.toLowerCase().trim();
+      document.querySelectorAll(".skill-chip").forEach(chip => {
+        const match = chip.textContent.toLowerCase().includes(search);
+        chip.classList.toggle("hidden", !match);
+        chip.classList.toggle("active", Boolean(search && match));
+      });
+    };
+
+    const filterExperience = () => {
+      const search = document.getElementById("experienceSearch").value.toLowerCase().trim();
+      document.querySelectorAll(".timeline-item").forEach(item => {
+        item.classList.toggle("hidden", search && !item.dataset.search.includes(search));
+      });
+    };
+
+    document.getElementById("skillSearch").addEventListener("input", filterSkills);
+    document.getElementById("experienceSearch").addEventListener("input", filterExperience);
+
+    document.querySelectorAll(".skill-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.getElementById("experienceSearch").value = chip.textContent;
+        filterExperience();
+        document.getElementById("experience").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    animateCounters();
+  </script>
+</body>
+</html>
